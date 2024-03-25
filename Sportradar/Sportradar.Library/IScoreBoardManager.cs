@@ -7,8 +7,8 @@ public interface IScoreBoardManager
 {
     Task<FootballMatch> StartNewMatchAsync(string homeTeamName, string awayTeamName);
     Task<FootballMatch> UpdateScoreAsync(string homeTeamName, int homeTeamScore, string awayTeamName,  int awayTeamScore);
-    Task FinishMatchAsync(string homeTeamName, string awayTeamName);
-    Task<List<FootballMatch>> GetMatchesAsync();
+    Task<FootballMatch> FinishMatchAsync(string homeTeamName, string awayTeamName);
+    Task<IEnumerable<FootballMatch>> GetMatchesAsync();
 }
 
 public class ScoreBoardManager(ITeamRepository teamRepository, IFootballMatchRepository footballMatchRepository) : IScoreBoardManager
@@ -37,14 +37,23 @@ public class ScoreBoardManager(ITeamRepository teamRepository, IFootballMatchRep
         return await footballMatchRepository.UpdateFootballMatchAsync(match);
     }
 
-    public Task FinishMatchAsync(string homeTeamName, string awayTeamName)
+    public async Task<FootballMatch> FinishMatchAsync(string homeTeamName, string awayTeamName)
     {
-        throw new NotImplementedException();
+        var match = await footballMatchRepository.GetFootballMatchAsync(homeTeamName, awayTeamName);
+        
+        if (match is null)
+        {
+            throw new Exception($"Match not found for given teams names {homeTeamName} and {awayTeamName} or match is already finished.");
+        }
+        
+        match.IsFinished = true;
+        
+        return await footballMatchRepository.UpdateFootballMatchAsync(match);
     }
 
-    public Task<List<FootballMatch>> GetMatchesAsync()
+    public async Task<IEnumerable<FootballMatch>> GetMatchesAsync()
     {
-        throw new NotImplementedException();
+        return await footballMatchRepository.GetFootballMatchesAsync();
     }
     
     private async Task<Team> GetOrCreateTeamAsync(string teamName)
