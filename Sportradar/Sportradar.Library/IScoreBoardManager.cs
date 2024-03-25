@@ -23,9 +23,18 @@ public class ScoreBoardManager(ITeamRepository teamRepository, IFootballMatchRep
         return match;
     }
 
-    public Task<FootballMatch> UpdateScoreAsync(string homeTeamName, int homeTeamScore, string awayTeamName, int awayTeamScore)
+    public async Task<FootballMatch> UpdateScoreAsync(string homeTeamName, int homeTeamScore, string awayTeamName, int awayTeamScore)
     {
-        throw new NotImplementedException();
+        var match = await footballMatchRepository.GetFootballMatchAsync(homeTeamName, awayTeamName);
+
+        if (match is null)
+        {
+            throw new Exception($"Match not found for given teams names {homeTeamName} and {awayTeamName} or match is already finished.");
+        }
+        
+        match.UpdateScore(homeTeamScore, awayTeamScore);
+        
+        return await footballMatchRepository.UpdateFootballMatchAsync(match);
     }
 
     public Task FinishMatchAsync(string homeTeamName, string awayTeamName)
