@@ -1,5 +1,3 @@
-using NUnit.Framework;
-
 namespace Sportradar.Library.Tests;
 
 public class ScoreBoardManagerTests
