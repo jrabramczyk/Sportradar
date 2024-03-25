@@ -1,4 +1,5 @@
 ﻿using Sportradar.Library.Models;
+using Sportradar.Library.Repositories;
 
 namespace Sportradar.Library;
 
@@ -10,8 +11,10 @@ public interface IScoreBoardManager
     Task<List<FootballMatch>> GetMatchesAsync();
 }
 
-public class ScoreBoardManager : IScoreBoardManager
+public class ScoreBoardManager(ITeamRepository teamRepository) : IScoreBoardManager
 {
+    private readonly ITeamRepository _teamRepository = teamRepository;
+
     public Task<FootballMatch> StartNewMatchAsync(string homeTeamName, string awayTeamName)
     {
         throw new NotImplementedException();
