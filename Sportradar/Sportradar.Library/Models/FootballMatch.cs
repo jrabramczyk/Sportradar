@@ -1,11 +1,10 @@
 ﻿namespace Sportradar.Library.Models;
 
-public class FootballMatch
+public class FootballMatch(Team home, Team away)
 {
-    public int Id { get; set; }
-    
-    public Team Home { get; set; }
-    public Team Away { get; set; }
+    public Team Home { get; } = home;
+    public Team Away { get; } = away;
 
-    public DateTime StartTime { get; set; }
+    public DateTime StartTime { get; } = DateTime.UtcNow;
+    public bool IsFinished { get; set; } = false;
 }

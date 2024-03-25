@@ -11,26 +11,25 @@ public interface IScoreBoardManager
     Task<List<FootballMatch>> GetMatchesAsync();
 }
 
-public class ScoreBoardManager(ITeamRepository teamRepository) : IScoreBoardManager
+public class ScoreBoardManager(ITeamRepository teamRepository, IFootballMatchRepository footballMatchRepository) : IScoreBoardManager
 {
-    private readonly ITeamRepository _teamRepository = teamRepository;
-
     public async Task<FootballMatch> StartNewMatchAsync(string homeTeamName, string awayTeamName)
     {
         var homeTeam = await GetOrCreateTeamAsync(homeTeamName);
         var awayTeam = await GetOrCreateTeamAsync(awayTeamName);
-        
-        var match = new FootballMatch
-        {
-            Home = homeTeam,
-            Away = awayTeam,
-            StartTime = DateTime.UtcNow
-        };
+
+        var match = await CreateNewMatchAsync(homeTeam, awayTeam);
 
         throw new NotImplementedException();
     }
 
-    
+    private async Task<FootballMatch> CreateNewMatchAsync(Team homeTeam, Team awayTeam)
+    {
+        var match = await footballMatchRepository.CreateFootballMatchAsync(homeTeam, awayTeam);
+
+        return match;
+    }
+
 
     public Task<FootballMatch> UpdateScoreAsync(int matchId, int homeTeamScore, int awayTeamScore)
     {
@@ -49,8 +48,8 @@ public class ScoreBoardManager(ITeamRepository teamRepository) : IScoreBoardMana
     
     private async Task<Team> GetOrCreateTeamAsync(string teamName)
     {
-        var team = await _teamRepository.GetTeamAsync(teamName) 
-                   ?? await _teamRepository.CreateTeamAsync(teamName);
+        var team = await teamRepository.GetTeamAsync(teamName) 
+                   ?? await teamRepository.CreateTeamAsync(teamName);
 
         return team;
     }

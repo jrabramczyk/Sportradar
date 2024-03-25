@@ -10,5 +10,6 @@ public static class DependencyRegistrar
         services.AddSingleton<IScoreBoardManager, ScoreBoardManager>();
         
         services.AddSingleton<ITeamRepository, TeamRepository>();
+        services.AddSingleton<IFootballMatchRepository, FootballMatchRepository>();
     }
 }
