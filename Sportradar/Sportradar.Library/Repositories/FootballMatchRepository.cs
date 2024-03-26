@@ -20,7 +20,7 @@ public class FootballMatchRepository : IFootballMatchRepository
 
     public Task<IEnumerable<FootballMatch>> GetFootballMatchesAsync()
     {
-        return Task.FromResult<IEnumerable<FootballMatch>>(FakeStorage.FootballMatches.ToList());
+        return Task.FromResult<IEnumerable<FootballMatch>>(FakeStorage.FootballMatches.Where(x => !x.IsFinished).ToList());
     }
 
     public Task<FootballMatch> CreateFootballMatchAsync(Team home, Team away)

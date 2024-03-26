@@ -71,4 +71,25 @@ public class FootballMatchRepositoryTests
         FakeStorage.FootballMatches.Count.Should().Be(2);
         FakeStorage.FootballMatches.Should().Contain(expectignMatch);
     }
+    
+    [Test]
+    public void GetFootballMatchesAsync_ReturnsOnlyNotFinishedMatches()
+    {
+        //arrange
+        var homeTeam = new Team("HomeTeam");
+        var awayTeam = new Team("AwayTeam");
+
+        var match = new FootballMatch(homeTeam, awayTeam)
+        {
+            IsFinished = true
+        };
+        
+        FakeStorage.FootballMatches.Add(match);
+
+        //act
+        var matches = _footbalMatchRepository.GetFootballMatchesAsync().Result;
+
+        //assert
+        matches.Should().BeEmpty();
+    }
 }
