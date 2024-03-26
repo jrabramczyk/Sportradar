@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using Sportradar.Library.Models;
 using Sportradar.Library.Repositories;
@@ -50,6 +51,7 @@ public class ScoreBoardManagerTests
     [Test]
     public void StartNewMatchAsync_ForExistingTeams_ShouldReturnThem()
     {
+        //arrange
         var homeTeamName = "HomeTeam";
         var awayTeamName = "AwayTeam";
         
@@ -67,6 +69,35 @@ public class ScoreBoardManagerTests
         _teamRepository.Verify(x => x.GetTeamAsync(awayTeamName), Times.Once);
         
         _teamRepository.Verify(x => x.CreateTeamAsync(It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public void StartNewMatchAsync_CreatesNewFootbalMatch()
+    {
+        //arrange
+        var homeTeamName = "HomeTeam";
+        var awayTeamName = "AwayTeam";
+        
+        var homeTeam = new Team(homeTeamName);
+        var awayTeam = new Team(awayTeamName);
+        
+        var createdMatch = new FootballMatch(homeTeam, awayTeam);
+        
+        _teamRepository.Setup(x => x.GetTeamAsync(homeTeamName)).ReturnsAsync(homeTeam);
+        _teamRepository.Setup(x => x.GetTeamAsync(awayTeamName)).ReturnsAsync(awayTeam);
+
+        _footballMatchRepository
+            .Setup(x => x.CreateFootballMatchAsync(homeTeam, awayTeam))
+            .ReturnsAsync(createdMatch);
+        
+        //act
+        var returnedMatch = _sut.StartNewMatchAsync(homeTeamName, awayTeamName).Result;
+        
+        //assert
+        
+        _footballMatchRepository.Verify(x => x.CreateFootballMatchAsync(homeTeam, awayTeam), Times.Once);
+        
+        returnedMatch.Should().Be(createdMatch);
     }
     
     
