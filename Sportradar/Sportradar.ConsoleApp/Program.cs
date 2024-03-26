@@ -9,7 +9,7 @@ namespace Sportradar.ConsoleApp
     {
         private static void Main(string[] args)
         {
-            var services = RegisterDependencies();
+            var services = DependencyRegistrar.RegisterDependencies();
             
             var scoreBoardManager = services.GetRequiredService<IScoreBoardManager>();
            
@@ -26,26 +26,15 @@ namespace Sportradar.ConsoleApp
                 
                 if (command[0] == "start")
                 {
-                    var homeTeamName = command[2];
-                    var awayTeamName = command[4];
-                    
-                    _ = scoreBoardManager.StartNewMatchAsync(homeTeamName, awayTeamName).Result;
+                    CommandHandler.StartMatchCommand(command, scoreBoardManager);
                 }
                 else if (command[0] == "update")
                 {
-                    var homeTeamName = command[2];
-                    var homeTeamScore = int.Parse(command[3]);
-                    var awayTeamName = command[5];
-                    var awayTeamScore = int.Parse(command[6]);
-                    
-                    _ = scoreBoardManager.UpdateScoreAsync(homeTeamName, homeTeamScore, awayTeamName, awayTeamScore).Result;
+                    CommandHandler.UpdateMatchCommand(command, scoreBoardManager);
                 }
                 else if (command[0] == "finish")
                 {
-                    var homeTeamName = command[2];
-                    var awayTeamName = command[4];
-                    
-                    scoreBoardManager.FinishMatchAsync(homeTeamName, awayTeamName);
+                    CommandHandler.FinishMatchCommand(command, scoreBoardManager);
                 }
                 else if (command[0] == "get-matches")
                 {
@@ -62,18 +51,9 @@ namespace Sportradar.ConsoleApp
                 }
                 else
                 {
-                    Console.WriteLine("Invalid command.");
+                    Console.WriteLine("Invalid command, please try again.");
                 }
             }
-        }
-
-        private static ServiceProvider RegisterDependencies()
-        {
-            var services = new ServiceCollection();
-            
-            services.AddScoreBoardManager();
-            
-            return services.BuildServiceProvider();
         }
     }
 }
